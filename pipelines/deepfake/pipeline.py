@@ -39,7 +39,8 @@ from sagemaker.workflow.conditions import ConditionGreaterThanOrEqualTo
 from sagemaker.image_uris import retrieve
 
 
-BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+# BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+BASE_DIR = "./pipelines/deepfake"
 
 def get_sagemaker_client(region):
     """Gets the sagemaker client.
