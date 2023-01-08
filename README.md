@@ -68,7 +68,7 @@ The `tox` testing framework configuration:
 
 The overall architecture of the project is shown below:
 
-![Overall Archiecture](./img/overall-architecture.jpg)
+![Overall Archiecture](./img/deepfake-mlops-architecture.jpg)
 
 The architecture is divided into two main parts:
 
@@ -85,9 +85,9 @@ Models that meet the conditions set in the condition step, in our pipeline this 
 
 ![Sagemaker Pipeline Screenshot](./img/deepfake-pipeline-screenshot.png)
 
-![Model Registry Screenshot](./img/model-registry-approval.png)
-
 When a new model version is registered and approved, it automatically initiates a deployment using the second part of the architecture presented above (in this [link](https://github.com/naram92/DeepFakeDetection-mlops-model-deployment)).
+
+![Model Registry Screenshot](./img/model-registry-approval-screenshot.png)
 
 
 
