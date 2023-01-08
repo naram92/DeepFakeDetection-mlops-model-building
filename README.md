@@ -1,61 +1,42 @@
-## Layout of the SageMaker ModelBuild Project Template
+# Deepfake Detection MLOps - Build End-to-End Pipeline using Sagemaker Pipeline, AWS CodeBuild and AWS CodePipeline
 
-The template provides a starting point for bringing your SageMaker Pipeline development to production.
+This project consists of the implementation of end-to-end machine learning pipelines for [deepfake video detection](https://github.com/naram92/DeepFakeDetection), including data pre-processing, training, model deployment using different services on AWS including mainly Sagemaker Pipeline, AWS CodeCommit, AWS CodePipeline and AWS CloudFormation.
 
-```
-|-- codebuild-buildspec.yml
-|-- CONTRIBUTING.md
-|-- pipelines
-|   |-- abalone
-|   |   |-- evaluate.py
-|   |   |-- __init__.py
-|   |   |-- pipeline.py
-|   |   `-- preprocess.py
-|   |-- get_pipeline_definition.py
-|   |-- __init__.py
-|   |-- run_pipeline.py
-|   |-- _utils.py
-|   `-- __version__.py
-|-- README.md
-|-- sagemaker-pipelines-project.ipynb
-|-- setup.cfg
-|-- setup.py
-|-- tests
-|   `-- test_pipelines.py
-`-- tox.ini
-```
+The project is created based on the [SageMaker Project Template - MLOps template for model building, training and deployment with third-party Git repositories](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-templates-sm.html#sagemaker-projects-templates-git-code-pipeline).
 
-## Start here
-This is a sample code repository that demonstrates how you can organize your code for an ML business solution. This code repository is created as part of creating a Project in SageMaker. 
-
-In this example, we are solving the abalone age prediction problem using the abalone dataset (see below for more on the dataset). The following section provides an overview of how the code is organized and what you need to modify. In particular, `pipelines/pipelines.py` contains the core of the business logic for this problem. It has the code to express the ML steps involved in generating an ML model. You will also find the code for that supports preprocessing and evaluation steps in `preprocess.py` and `evaluate.py` files respectively.
-
-Once you understand the code structure described below, you can inspect the code and you can start customizing it for your own business case. This is only sample code, and you own this repository for your business use case. Please go ahead, modify the files, commit them and see the changes kick off the SageMaker pipelines in the CICD system.
-
-You can also use the `sagemaker-pipelines-project.ipynb` notebook to experiment from SageMaker Studio before you are ready to checkin your code.
-
-A description of some of the artifacts is provided below:
+### Project layout
 <br/><br/>
-Your codebuild execution instructions. This file contains the instructions needed to kick off an execution of the SageMaker Pipeline in the CICD system (via CodePipeline). You will see that this file has the fields definined for naming the Pipeline, ModelPackageGroup etc. You can customize them as required.
+The codebuild execution instructions. This file contains the instructions needed to kick off an execution of the SageMaker Pipeline in the CICD system (via CodePipeline). 
 
 ```
 |-- codebuild-buildspec.yml
 ```
 
 <br/><br/>
-Your pipeline artifacts, which includes a pipeline module defining the required `get_pipeline` method that returns an instance of a SageMaker pipeline, a preprocessing script that is used in feature engineering, and a model evaluation script to measure the Mean Squared Error of the model that's trained by the pipeline. This is the core business logic, and if you want to create your own folder, you can do so, and implement the `get_pipeline` interface as illustrated here.
+The pipeline artifacts, which includes a pipeline module defining the required `get_pipeline` method that returns an instance of a SageMaker pipeline, a preprocessing script and a model evaluation script to measure the accuracy of the model that's trained by the pipeline.
 
 ```
 |-- pipelines
-|   |-- abalone
-|   |   |-- evaluate.py
+|   |-- deepfake
+|   |   |-- preprocess
+|   |   |   |-- blazeface.py
+|   |   |   |-- face_extract.py
+|   |   |   |-- preprocess_deepfake.py
+|   |   |   |-- requirements.txt
+|   |   |-- code
+|   |   |   |-- s3dataset.py
+|   |   |   |-- test_train.py
+|   |   |   |-- train.py
+|   |   |   |-- requirements.txt
+|   |   |-- evaluate
+|   |   |   |-- evaluate.py
+|   |   |   |-- test_evaluate.py
 |   |   |-- __init__.py
 |   |   |-- pipeline.py
-|   |   `-- preprocess.py
 
 ```
 <br/><br/>
-Utility modules for getting pipeline definition jsons and running pipelines (you do not typically need to modify these):
+Utility modules for getting pipeline definition jsons and running pipelines:
 
 ```
 |-- pipelines
@@ -72,7 +53,7 @@ Python package artifacts:
 |-- setup.py
 ```
 <br/><br/>
-A stubbed testing module for testing your pipeline as you develop:
+A stubbed testing module for testing the pipeline:
 ```
 |-- tests
 |   `-- test_pipelines.py
@@ -83,14 +64,34 @@ The `tox` testing framework configuration:
 `-- tox.ini
 ```
 
-## Dataset for the Example Abalone Pipeline
+## Overall Architecture
 
-The dataset used is the [UCI Machine Learning Abalone Dataset](https://archive.ics.uci.edu/ml/datasets/abalone) [1]. The aim for this task is to determine the age of an abalone (a kind of shellfish) from its physical measurements. At the core, it's a regression problem. 
-    
-The dataset contains several features - length (longest shell measurement), diameter (diameter perpendicular to length), height (height with meat in the shell), whole_weight (weight of whole abalone), shucked_weight (weight of meat), viscera_weight (gut weight after bleeding), shell_weight (weight after being dried), sex ('M', 'F', 'I' where 'I' is Infant), as well as rings (integer).
+The overall architecture of the project is shown below:
 
-The number of rings turns out to be a good approximation for age (age is rings + 1.5). However, to obtain this number requires cutting the shell through the cone, staining the section, and counting the number of rings through a microscope -- a time-consuming task. However, the other physical measurements are easier to determine. We use the dataset to build a predictive model of the variable rings through these other physical measurements.
+![Overall Archiecture](./img/overall-architecture.jpg)
 
-We'll upload the data to a bucket we own. But first we gather some constants we can use later throughout the notebook.
+The architecture is divided into two main parts:
 
-[1] Dua, D. and Graff, C. (2019). [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml). Irvine, CA: University of California, School of Information and Computer Science.
+* The first part involves processing data, training and testing models, and registering the models in the SageMaker Model Registry (in this github repository).
+* The second part involves automating the deployment of models from the SageMaker Model Registry to SageMaker endpoints for real-time inference. When a new model version is registered and approved, it initiates a deployment automatically (in this [link](https://github.com/naram92/DeepFakeDetection-mlops-model-deployment)).
+
+### Code Pipeline 
+An AWS CodePipeline pipeline that has source and build steps. The source step points to the Github repository. The build step gets the code from that repository, creates and updates the SageMaker pipeline, starts a pipeline execution, and waits for the pipeline execution to complete.
+
+![CodePipeline Screenshot](./img/codepipeline-modelbuild-screenshot.png)
+
+### Model registry
+Models that meet the conditions set in the condition step, in our pipeline this is the check-accuracy-deepfake-evaluation step will be registered in the model registry as shown in the following figures.
+
+![Sagemaker Pipeline Screenshot](./img/deepfake-pipeline-screenshot.png)
+
+![Model Registry Screenshot](./img/model-registry-approval.png)
+
+When a new model version is registered and approved, it automatically initiates a deployment using the second part of the architecture presented above (in this [link](https://github.com/naram92/DeepFakeDetection-mlops-model-deployment)).
+
+
+
+
+
+
+
