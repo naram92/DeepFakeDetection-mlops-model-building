@@ -5,14 +5,14 @@ This project consists of the implementation of end-to-end machine learning pipel
 The project is created based on the [SageMaker Project Template - MLOps template for model building, training and deployment with third-party Git repositories](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-templates-sm.html#sagemaker-projects-templates-git-code-pipeline).
 
 ### Project layout
-<br/><br/>
+
 The codebuild execution instructions. This file contains the instructions needed to kick off an execution of the SageMaker Pipeline in the CICD system (via CodePipeline). 
 
 ```
 |-- codebuild-buildspec.yml
 ```
 
-<br/><br/>
+
 The pipeline artifacts, which includes a pipeline module defining the required `get_pipeline` method that returns an instance of a SageMaker pipeline, a preprocessing script and a model evaluation script to measure the accuracy of the model that's trained by the pipeline.
 
 ```
@@ -35,7 +35,7 @@ The pipeline artifacts, which includes a pipeline module defining the required `
 |   |   |-- pipeline.py
 
 ```
-<br/><br/>
+
 Utility modules for getting pipeline definition jsons and running pipelines:
 
 ```
@@ -46,19 +46,19 @@ Utility modules for getting pipeline definition jsons and running pipelines:
 |   |-- _utils.py
 |   `-- __version__.py
 ```
-<br/><br/>
+
 Python package artifacts:
 ```
 |-- setup.cfg
 |-- setup.py
 ```
-<br/><br/>
+
 A stubbed testing module for testing the pipeline:
 ```
 |-- tests
 |   `-- test_pipelines.py
 ```
-<br/><br/>
+
 The `tox` testing framework configuration:
 ```
 `-- tox.ini
