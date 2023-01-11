@@ -1,6 +1,6 @@
 # Deepfake Detection MLOps - Build End-to-End Pipeline using Sagemaker Pipeline, AWS CodeBuild and AWS CodePipeline - Part 1
 
-This project involves the implementation of end-to-end machine learning pipelines for [deepfake video detection] (https://github.com/naram92/DeepFakeDetection), including data preprocessing, training, and model deployment using various AWS services, primarily Sagemaker Pipeline, AWS CodeCommit, AWS CodePipeline, and AWS CloudFormation.
+This project involves the implementation of end-to-end machine learning pipelines for [deepfake video detection](https://github.com/naram92/DeepFakeDetection), including data preprocessing, training, and model deployment using various AWS services, primarily Sagemaker Pipeline, AWS CodeCommit, AWS CodePipeline, and AWS CloudFormation.
 
 The project is created based on the [SageMaker Project Template - MLOps template for model building, training and deployment with third-party Git repositories](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-templates-sm.html#sagemaker-projects-templates-git-code-pipeline).
 
